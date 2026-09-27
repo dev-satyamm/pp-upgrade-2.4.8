@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Magefan\Blog\Block\Social;
+
+use Magento\Store\Model\ScopeInterface;
+
+class AddThis extends \Magento\Framework\View\Element\Template
+{
+    /**
+     * Retrieve AddThis status
+     *
+     * @return boolean
+     */
+    public function getAddThisEnabled(): bool
+    {
+        return (bool)$this->_scopeConfig->getValue(
+            'mfblog/social/add_this_enabled',
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Retrieve AddThis publisher id
+     *
+     * @return boolean
+     */
+    public function getAddThisPubId()
+    {
+        return $this->_scopeConfig->getValue(
+            'mfblog/social/add_this_pubid',
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Retrieve AddThis language code
+     *
+     * @return boolean
+     */
+    public function getAddThisLanguage()
+    {
+        return $this->_scopeConfig->getValue(
+            'mfblog/social/add_this_language',
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Renders the HTML output if the required conditions are met.
+     *
+     * @return string
+     */
+    public function toHtml()
+    {
+        if (!$this->getAddThisEnabled() || !$this->getAddThisPubId()) {
+            return '';
+        }
+
+        return parent::toHtml();
+    }
+}

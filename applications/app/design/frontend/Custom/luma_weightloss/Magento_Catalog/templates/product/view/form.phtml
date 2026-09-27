@@ -1,0 +1,120 @@
+<?php
+/**
+ * Product view template
+ *
+ * @var $block \Magento\Catalog\Block\Product\View
+ */
+$_product = $block->getProduct();
+$_helper = $this->helper(Magento\Catalog\Helper\Output::class);
+$_helperCatalog = $this->helper(Haartyhanks\CategoryQuest\Helper\Data::class);
+$_helperCatalogWL = $this->helper(Haartyhanks\CategoryQuestWL\Helper\Data::class);
+
+$proCustopt = $_product->getOptions();
+$moduleName = $this->getRequest()->getModuleName();
+$prodCategoryIds = $_helperCatalog->getCategoryIds($_product->getId());
+$storeId = $_helperCatalogWL->getCurrentStoreId();
+
+if ($storeId == 2) {
+    $catUrl = $_helperCatalog->getCatUrlById(183);
+} else {
+    $catUrl = $_helperCatalog->getCatUrlById($prodCategoryIds[1]);
+}
+
+if ($moduleName == "checkout") {
+    $button = "Edit Consultation";
+} else {
+    $button = "ORDER ITEM";
+}
+
+$_amastyCustomFormHelper = $this->helper(Amasty\Customform\Helper\Data::class);
+$hasCategoryQuestions = $_product->getAttributeText('has_category_questionnaire');
+$uniqueHash = $_amastyCustomFormHelper->getUniqueHash();
+$isFilledCategory = $_helperCatalog->getIsFilledCategory();
+$categoryIds = $_helperCatalog->getCategoryIds($_product->getId());
+// echo "is filled :";
+if($isFilledCategory){
+    $filledCategoryValue = json_encode($isFilledCategory);
+} else {
+    $filledCategoryValue = null;
+}
+// print_r($isFilledCategory);
+// print_r($categoryIds['0']);
+// echo "<br>".'Category Questions :'.$hasCategoryQuestions;
+$_helperCatalog->unsIsFilledCategory();
+?>
+
+<div class="product-add-form">
+    <form data-product-sku="<?= $block->escapeHtmlAttr($_product->getSku()) ?>" action="<?= $block->escapeUrl($block->getSubmitUrl($_product)) ?>" method="post" id="product_addtocart_form" <?php if ($_product->getOptions()) : ?> enctype="multipart/form-data" <?php endif; ?>>
+
+        <input type="hidden" name="product" value="<?= (int)$_product->getId() ?>" />
+        <input type="hidden" name="selected_configurable_option" value="" />
+        <input type="hidden" name="related_product" id="related-products-field" value="" />
+        <input type="hidden" name="item" value="<?= (int)$block->getRequest()->getParam('id') ?>" />
+        <?= $block->getBlockHtml('formkey') ?>
+        <?= $block->getChildHtml('form_top') ?>
+
+        <?php if (!$block->hasOptions()) : ?>
+            <?= $block->getChildHtml('product_info_form_content') ?>
+        <?php else : ?>
+
+            <?php if ($_product->isSaleable() && $block->getOptionsContainer() == 'container1') : ?>
+                <?= $block->getChildChildHtml('options_container') ?>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if ($_product->isSaleable() && $block->hasOptions() && $block->getOptionsContainer() == 'container2') : ?>
+            <?= $block->getChildChildHtml('options_container') ?>
+        <?php endif; ?>
+        <?= $block->getChildHtml('form_bottom') ?>
+
+        <div class="info-btn">
+            <?php if (!empty($proCustopt) && $_product->isSaleable()) {
+
+                // $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                // $current_category = $_helperCatalog->getCurrentCategory(); 
+                // $current_category = $_helperCatalog->getCategory(); 
+                // $current_category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');
+                // $curCatId = '';
+                // $curCat = "";
+                // if ($current_category) {
+                //     $curCat = $current_category->getPath();
+                //     $curCatId = $current_category->getId();
+                // }
+                
+                // file_put_contents('/home/devanna/Desktop/text.txt', $_product->getId());
+                $_helperCatalog->setCatValueSession($prodCategoryIds[0]);
+                $_helperCatalog->setProdValueSession($_product->getId());
+
+            ?>
+                      <?php }
+            $buttonTitle = __('Add to Cart');
+            if (empty($proCustopt) && $_product->isSaleable()) {  ?>
+                <!-- For Config product without custom option/Questionaire -->
+                <?php if ($_product->getTypeId() == "simple" || $_product->getTypeId() == "virtual") : ?>
+                    <button type="submit" class=""><?= $block->escapeHtml($buttonTitle) ?></button>
+                    <!-- <div class="fill-cat-question"><p>You didn't filled consultation quesions. Please <a href="<?php //echo $catUrl; ?>">Click Here</a> to fill.</p></div> -->
+                <?php else : ?>
+                   
+                    <?php endif; ?>
+            <?php }
+
+            ?>
+
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+<script type="text/x-magento-init">
+    {
+        "[data-role=priceBox][data-price-box=product-id-<?= $block->escapeHtml($_product->getId()) ?>]": {
+            "priceBox": {
+                "priceConfig": <?= /* @noEscape */ $block->getJsonConfig() ?>
+            }
+        }
+    }
+</script>

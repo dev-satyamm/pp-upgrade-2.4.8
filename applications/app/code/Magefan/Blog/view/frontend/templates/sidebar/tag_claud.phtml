@@ -1,0 +1,41 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog tag claud sidebar template
+ *
+ * @var \Magefan\Blog\Block\Sidebar\TagClaud $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!isset($escaper)) {
+    /* Compatability fix for old Magento versions */
+    $escaper = $block;
+}
+?>
+<?php $tags = $block->getTags(); ?>
+
+<?php if (count($tags)) { ?>
+<div class="widget block block-tagclaud" data-bind="scope: 'tagclaud'">
+    <div class="block-title">
+        <strong><?= $escaper->escapeHtml(__('Tags')) ?></strong>
+    </div>
+
+    <div class="tagclaud-hld">
+    <?php foreach ($tags as $tag) { ?>
+        <?php $title = $tag->getTitle() ?>
+        <span class="<?= $escaper->escapeHtml($block->getTagClass($tag)) ?>">
+            <a href="<?= $escaper->escapeUrl($tag->getTagUrl()) ?>" title="<?= $escaper->escapeHtml($title) ?>">
+                <?= $escaper->escapeHtml($title) ?>
+            </a>
+        </span>
+    <?php } ?>
+    </div>
+</div>
+<?php } ?>

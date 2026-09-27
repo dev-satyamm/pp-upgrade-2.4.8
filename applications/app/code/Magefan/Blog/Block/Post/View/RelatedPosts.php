@@ -1,0 +1,91 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+declare(strict_types=1);
+
+namespace Magefan\Blog\Block\Post\View;
+
+/**
+ * Blog post related posts block
+ */
+class RelatedPosts extends \Magefan\Blog\Block\Post\PostList\AbstractList
+{
+    /**
+     * Prepare posts collection
+     *
+     * @return void
+     */
+    protected function _preparePostCollection()
+    {
+        $pageSize = (int) $this->_scopeConfig->getValue(
+            \Magefan\Blog\Model\Config::XML_RELATED_POSTS_NUMBER,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        $this->_postCollection = $this->getPost()->getRelatedPosts()
+            ->addActiveFilter()
+            ->setPageSize($pageSize ?: 5);
+
+        $this->_postCollection->getSelect()->order('rl.position', 'ASC');
+    }
+
+    /**
+     * Retrieve true if Display Related Posts enabled
+     *
+     * @return boolean
+     */
+    public function displayPosts(): bool
+    {
+        return (bool) $this->_scopeConfig->getValue(
+            \Magefan\Blog\Model\Config::XML_RELATED_POSTS_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Retrieve posts instance
+     *
+     * @return \Magefan\Blog\Model\Category
+     */
+    public function getPost()
+    {
+        if (!$this->hasData('post')) {
+            $this->setData(
+                'post',
+                $this->_coreRegistry->registry('current_blog_post')
+            );
+        }
+        return $this->getData('post');
+    }
+
+    /**
+     * Retrieve the block title or default to 'Related Posts'
+     *
+     * @return string
+     */
+    public function getBlockTitle()
+    {
+        return $this->getData('block_title') ?: __('Related Posts');
+    }
+
+    /**
+     * Get relevant path to template
+     *
+     * @return string
+     */
+    public function getTemplate()
+    {
+        $templateName = $this->getData('template_type') ?: (string)$this->_scopeConfig->getValue(
+            'mfblog/post_view/related_posts/template',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        if ($template = $this->templatePool->getTemplate('blog_post_view_related_post', $templateName)) {
+            $this->_template = $template;
+        }
+        return parent::getTemplate();
+    }
+}

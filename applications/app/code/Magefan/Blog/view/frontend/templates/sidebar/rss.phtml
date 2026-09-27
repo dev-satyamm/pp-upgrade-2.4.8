@@ -1,0 +1,34 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog sidebar archive template
+ *
+ * @var \Magefan\Blog\Block\Sidebar\Rss $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!isset($escaper)) {
+    /* Compatability fix for old Magento versions */
+    $escaper = $block;
+}
+?>
+<div class="widget block block-rss" data-bind="scope: 'blog-rss'">
+    <div class="block-title">
+        <strong>
+            <a target="_blank"
+               href="<?= $escaper->escapeUrl($block->getUrl('blog/rss/feed')) ?>">
+                <?= $escaper->escapeHtml(__('RSS Feed')) ?>
+            </a>
+        </strong>
+        <img width="17" height="17" class="rss-icon"
+             src="<?= $escaper->escapeUrl($block->getViewFileUrl('Magefan_Blog::images/rss-icon.png')) ?>"
+             alt="<?= $escaper->escapeHtml(__('RSS Feed')) ?>" >
+    </div>
+</div>

@@ -1,0 +1,53 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+
+/**
+ * Blog rss feed template
+ *
+ * @var \Magefan\Blog\Block\Rss\Feed $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!isset($escaper)) {
+    /* Compatability fix for old Magento versions */
+    $escaper = $block;
+}
+
+$_postCollection = $block->getPostCollection();
+echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\r\n";
+
+?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+     version="2.0" >
+<channel>
+   <title><?= $escaper->escapeHtml($block->getTitle()) ?></title>
+   <atom:link href="<?= $escaper->escapeUrl($block->getLink()) ?>" rel="self" type="application/rss+xml"/>
+   <link><?= $escaper->escapeUrl($block->getLink()) ?></link>
+   <description><?= $escaper->escapeHtml($block->getDescription()) ?></description>
+    <?php foreach ($_postCollection as $_post) { ?>
+   <item>
+      <title><?= $escaper->escapeHtml($_post->getTitle()) ?></title>
+      <link><?= $escaper->escapeUrl($_post->getPostUrl()) ?></link>
+      <guid><?= $escaper->escapeUrl($_post->getPostUrl()) ?></guid>
+      <description><![CDATA[<?= /*@noEscape*/ $block->getPostContent($_post) ?>]]></description>
+        <?php /*if ($featuredImage = $_post->getFeaturedImage()) { ?>
+         <image><?= $featuredImage ?></image>
+      <?php }*/ ?>
+      <pubDate><?= $escaper->escapeHtml($_post->getPublishDate('r')) ?></pubDate>
+        <?php foreach ($_post->getParentCategories() as $category) { ?>
+      <category><![CDATA[<?= $escaper->escapeHtml($category->getTitle()) ?>]]></category>
+        <?php } ?>
+   </item>
+    <?php } ?>
+</channel>
+</rss>

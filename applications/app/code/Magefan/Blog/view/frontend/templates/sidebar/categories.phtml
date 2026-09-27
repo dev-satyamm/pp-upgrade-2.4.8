@@ -1,0 +1,96 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog sidebar categories template
+ *
+ * @var \Magefan\Blog\Block\Sidebar\Categories $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Magefan\Community\Api\SecureHtmlRendererInterface $mfSecureRenderer
+ */
+
+if (!isset($escaper)) {
+    /* Compatability fix for old Magento versions */
+    $escaper = $block;
+}
+?>
+
+<?php $items = $block->getGroupedChilds(); ?>
+
+<?php if (count($items)) { ?>
+    <?php $collapsible = $block->isCollapsibleEnabled(); ?>
+    <div class="widget block block-categories" data-bind="scope: 'categories'">
+        <div class="block-title">
+            <strong><?= $escaper->escapeHtml(__('Categories')) ?></strong>
+        </div>
+
+        <ul class="accordion"  id="accordion-2">
+            <?php
+            $level = 0;
+            $first = true;
+            foreach ($items as $index => $item) {
+                $newLevel = $item->getLevel();
+                if ($level == $newLevel && !$first) {
+                    echo '</li>';
+                }
+
+                if ($level < $newLevel) {
+                    echo '<ul>';
+                }
+
+                if ($level > $newLevel) {
+                    for ($i = $level; $i > $newLevel; $i--) {
+                        echo '</ul></li>';
+                    }
+                }
+                $nextItem = $items[$index + 1] ?? null;
+                $hasChildren = $nextItem && $nextItem->getLevel() > $newLevel;
+                ?>
+
+
+                <li class="item <?= $collapsible ? ($hasChildren ? 'parent' : '') : 'open'?>">
+                    <a title="<?= $escaper->escapeHtml($item->getTitle()) ?>" href="<?= $escaper->escapeUrl($item->getCategoryUrl()) ?>">
+                        <?php if ($collapsible) { ?>
+                            <span class="toggle"></span>
+                        <?php } ?>
+
+                        <span class="block-category-name">
+                            <?= $escaper->escapeHtml($item->getTitle()) ?>
+                        </span>
+
+                        <?php if ($block->showPostsCount()) { ?>
+                            <span class="block-category-count">(<?= $escaper->escapeHtml($item->getPostsCount()) ?>)</span>
+                        <?php } ?>
+                    </a>
+
+            <?php
+                $level = $newLevel;
+                $first = false;
+            } ?>
+        </ul>
+    </div>
+    <?php if ($collapsible) { ?>
+        <?php $script = "
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.widget.block-categories .accordion li').forEach(li => {
+                    const childUl = li.querySelector(':scope > ul');
+                    const toggleBtn = li.querySelector(':scope > a > .toggle');
+
+                    if (childUl && toggleBtn) {
+                        toggleBtn.addEventListener('click', e => {
+                            e.preventDefault();
+                            li.classList.toggle('open');
+                        });
+                    }
+                });
+            });
+        "; ?>
+        <?= /* @noEscape */ $mfSecureRenderer->renderTag('script', [], $script, false) ?>
+    <?php } ?>
+<?php } ?>

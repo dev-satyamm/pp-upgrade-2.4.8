@@ -1,0 +1,85 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog sidebar posts list template
+ *
+ * @var \Magefan\Blog\Block\Post\PostList\AbstractList $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!isset($escaper)) {
+    /* Compatability fix for old Magento versions */
+    $escaper = $block;
+}
+?>
+
+<?php
+    $_postCollection = $block->getPostCollection();
+?>
+<?php
+    $width = (int)$block->getBlockImageWidth() ?: 300;
+    $height = (int)$block->getBlockImageheight() ?: 200;
+    $imageHelper = $this->helper(\Magefan\Blog\Helper\Image::class);
+?>
+<?php if ($_postCollection->count()) { ?>
+<div class="widget block block-<?= $escaper->escapeHtml(str_replace('_', '-', $block->getWidgetKey())) ?> block-list-posts" >
+    <div class="block-title">
+        <strong><?= $escaper->escapeHtml(__($block->getBlockTitle() ?: 'Recent Posts')) ?></strong>
+    </div>
+    <div class="block-content">
+        <?php foreach ($_postCollection as $_post) { ?>
+            <?php
+                $_postUrl = $escaper->escapeUrl($_post->getPostUrl());
+                $_postName = $escaper->escapeHtml($_post->getTitle());
+            ?>
+            <div class="item clearfix">
+                <?php if ($block->getDisplayImage()) { ?>
+                    <?php $featuredImage = $_post->getFeaturedListImage() ?: $_post->getFeaturedImage(); ?>
+                    <div class="post-image">
+                        <?php
+                        $featuredImgAlt = $_post->getData('featured_list_img_alt') ?: $_post->getData('featured_img_alt');
+                        if (!$featuredImgAlt) {
+                            $featuredImgAlt =  $_postName;
+                        }
+                        ?>
+                        <a class="post-item-link" title="<?= /*@noEscape*/ $_postName ?>" href="<?= /*@noEscape*/ $_postUrl ?>">
+                            <?php
+                            if ($featuredImage) {
+                                $featuredImageUrl = $imageHelper->init($_post->getFeaturedListImg() ?: $_post->getFeaturedImg())->resize($width, $height);
+                                $imageWidthAndHeight = $imageHelper->getWidthAndHeight();
+                                $addWH = !empty($imageWidthAndHeight);
+                            } else {
+                                $featuredImageUrl = $block->getViewFileUrl('Magefan_Blog::images/default-no-image.png');
+                                $imageWidthAndHeight = ['width' => 1500, 'height' => 1500];
+                                $addWH = true;
+                            }
+                            ?>
+                            <img data-width-amp="<?= $escaper->escapeHtml($width) ?>" data-height-amp="<?= $escaper->escapeHtml($height) ?>" layout="responsive" src="<?= $escaper->escapeUrl($featuredImageUrl) ?>"
+                                 alt="<?= $escaper->escapeHtml($featuredImgAlt) ?>"
+                                 <?= $addWH ? 'width="' . $imageWidthAndHeight['width'] . '" height="' . $imageWidthAndHeight['height'] . '"' : '' ?>
+                            />
+                        </a>
+                    </div>
+                <?php } ?>
+
+                <a class="post-item-link" title="<?= /*@noEscape*/ $_postName ?>" href="<?= /*@noEscape*/ $_postUrl ?>">
+                    <?= /*@noEscape*/ $_postName ?>
+                </a>
+
+                <?php if ($block->getDisplayImage() && $_post->isPublishDateEnabled()) { ?>
+                    <div class="post-item-date">
+                        <span class="value"><?= $escaper->escapeHtml($_post->getPublishDate()) ?></span>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+<?php } ?>

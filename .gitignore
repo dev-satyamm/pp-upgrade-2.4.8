@@ -1,0 +1,108 @@
+# Magento 2 .gitignore
+# Project layout: docker-compose.yml + nginx/ at repo root, Magento code under /application
+
+# Root-level infra files (always tracked)
+!/.gitignore
+!/README.md
+!/docker-compose.yml
+!/docker-compose.*.yml
+!/nginx
+!/nginx/**
+
+# Environment / sensitive files (root-level, if any)
+/.env
+.env
+
+# --- Magento app (inside /application) ---
+/application/*
+!/application/.gitignore
+!/application/app
+/application/app/*
+!/application/app/code
+!/application/app/design
+!/application/app/etc
+
+!/application/bin
+!/application/lib
+!/application/pub
+/application/pub/*
+!/application/pub/errors
+!/application/pub/media
+/application/pub/media/*
+!/application/pub/media/.htaccess
+!/application/pub/opt
+!/application/pub/static
+/application/pub/static/*
+!/application/pub/static/.htaccess
+!/application/pub/index.php
+!/application/pub/get.php
+
+!/application/setup
+!/application/update
+!/application/dev
+/application/dev/*
+!/application/dev/tests
+!/application/dev/tools
+
+!/application/composer.json
+!/application/composer.lock
+!/application/auth.json.sample
+!/application/php.ini.sample
+!/application/nginx.conf.sample
+!/application/.htaccess.sample
+!/application/.php_cs.dist
+!/application/.travis.yml
+!/application/Gruntfile.js.sample
+!/application/package.json.sample
+!/application/phpunit.xml.dist
+!/application/grunt-config.json.sample
+!/application/README.md
+!/application/LICENSE.txt
+!/application/LICENSE_AFL.txt
+!/application/COPYING.txt
+
+# Environment / sensitive files
+/application/app/etc/env.php
+/application/app/etc/config.php
+/application/auth.json
+/application/.env
+
+# Generated / cache directories
+/application/var/*
+!/application/var/.htaccess
+/application/generated/*
+!/application/generated/.htaccess
+
+# Static content and media (already excluded above, kept explicit)
+/application/pub/static/*
+/application/pub/media/*
+!/application/pub/media/.htaccess
+
+# Vendor (composer-managed)
+/application/vendor/
+
+# --- General ignores anywhere in the repo ---
+
+# Logs
+*.log
+/application/var/log/*
+
+# Node modules (if using Grunt/npm for frontend)
+node_modules/
+npm-debug.log
+
+# IDE / OS files
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# Backup / dump files
+*.sql
+*.sql.gz
+*.tar.gz
+*.zip

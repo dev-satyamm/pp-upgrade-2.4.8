@@ -1,0 +1,535 @@
+<?php
+$_product = $block->getProduct();
+$proCustopt = $_product->getOptions();
+$productDesc = $_product->getData('short_description');
+$prodPrice = $_product->getPriceInfo()->getPrice('final_price')->getValue();
+$prodStock = $_product->isSaleable();
+$imageUrl = $this->helper('Magento\Catalog\Helper\Image')
+    ->init($_product, 'product_base_image')
+    ->constrainOnly(true)
+    ->keepAspectRatio(true)
+    ->keepTransparency(true)
+    ->keepFrame(false)
+    ->resize(150, 150)->getUrl();
+$prodName = $_product->getName();
+$prodDesc = $_product->getDescription();
+$prodUrl = $_product->getProductUrl();
+$prodSku = $_product->getSku();
+?>
+
+<div class="prod-desprection">
+    <?php if ($productDesc != "") { ?>
+        <div id="short-desc" style="display:none;">
+            <!--SHORT DESCRIPTIONS -->
+
+            <?php echo implode(' ', array_slice(explode(' ', $productDesc), 0, 20)) . "\n"; ?>
+
+            <span id="product-view-dots">...</span>
+        </div>
+
+        <!--FULL DESCRIPTIONS -->
+        <span id="product-view-full-desc" style="display: none;">
+            <?php /* @escapeNotVerified */ echo $productDesc; ?>
+        </span>
+ 
+
+    <?php }
+    if ($prodStock && $_product->getTypeId() == "configurable") { ?>
+        <!-- <span class="select-custoption">Please make a selection</span> -->
+        <div class="question-text">
+    <h2 class="question-text">Your Selection</h2>
+            <p class="p-description">Please use the options provided to make your final selection.</p>
+             
+            </p>
+        </div>
+
+    <?php } ?>
+</div>
+<div class="product-det">
+    <div class="product-desc">
+        <div class="product-img">
+            <img src="<?= $imageUrl ?>" alt="prodName">
+        </div>
+        <div class="product-name"><?= $prodName ?></div>
+        <!-- <div class="product-price">
+            <span class="brnad-selection"></span>
+            <span class="size-selection"></span>
+            <span class="price"><?php echo "£" . $prodPrice; ?></span>
+        </div> -->
+    </div>
+    <!-- <div class="total">
+        <span>Total</span>
+    </div> -->
+</div>
+<?php
+if (!($_product->isSaleable()) && $_product->getTypeId() == "configurable") {
+?>
+    <div class="config-price">
+        <span class="price-label">Starts at</span>
+        <span class="price"><?php echo "£" . $prodPrice; ?></span>
+    </div>
+<?php } ?>
+
+<script>
+    function readLessReadMore() {
+        var dots = document.getElementById("product-view-dots");
+        var moreText = document.getElementById("product-view-full-desc");
+        var btnText = document.getElementById("product-view-desc-hh");
+
+        if (dots.style.display === "none") {
+            dots.style.display = "inline";
+            btnText.innerHTML = "Read more";
+            moreText.style.display = "none";
+            document.getElementById("short-desc").style.display = "block";
+
+        } else {
+            dots.style.display = "none";
+            btnText.innerHTML = "Read less";
+            moreText.style.display = "inline";
+            document.getElementById("short-desc").style.display = "none";
+        }
+    }
+</script>
+<script>
+    require(['jquery', 'jquery/ui', "mage/mage"], function($) {
+
+        $('.swatch-attribute-selected-option').on('change', function() {
+            var barndVal = $(this).text();
+            $('brnad-selection').text(barndVal);
+            // alert( this.value );
+        })
+    })
+</script>
+
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Pharmacy",
+        "image": "<?php echo $imageUrl; ?>",
+        "name": "<?php echo $prodName; ?>",
+        "description": "<?php echo htmlspecialchars($prodDesc); ?>",
+        "openingHours": "Mo-Fr 08:00-17:30",
+        "PriceRange": "<?php echo $prodPrice; ?>",
+        "telephone": "+44 (0)800 978 8956",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "4 Progress Business Centre, Whittle Parkway",
+            "addressLocality": "Slough ",
+            "addressRegion": "LN",
+            "addressCountry": "GBP"
+        }
+    }
+</script>
+
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org/",
+        "@type": "Product",
+        "name": "<?php echo $prodName; ?>",
+        "brand": {
+            "@type": "Organization",
+            "legalName": "Pharmacy Planet"
+        },
+
+        "description": "<?php echo htmlspecialchars($prodDesc); ?>",
+        "sku": "<?php echo $prodSku; ?>",
+        "mpn": "*******",
+        "image": [{
+            "@type": "ImageObject",
+            "url": "<?php echo $imageUrl; ?>",
+            "caption": "<?php echo $prodName; ?>"
+        }],
+
+        "offers": {
+            "@type": "Offer",
+            "availability": "http://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition",
+            "url": "<?php echo $prodUrl; ?>",
+            "price": "<?php echo $prodPrice; ?>",
+            "priceCurrency": "GBP",
+            "PriceValidUntil": "2050-12-31 14:44:20",
+            "seller": {
+                "@type": "WebSite",
+                "name": "https://www.pharmacyplanet.com"
+            }
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "bestRating": "5",
+            "worstRating": "1",
+            "reviewCount": "6",
+            "url": "<?php echo $prodUrl; ?>"
+        },
+        "review": [
+
+            {
+                "@type": "Review",
+                "author": {
+                    "@type": "Person",
+                    "name": "Linda Olbison"
+                },
+                "datePublished": "2020-03-02 10:09:21",
+                "reviewBody": "1st class. Very happy with professional service",
+                "url": "",
+                "reviewRating": {
+                    "@type": "Rating",
+                    "bestRating": 5,
+                    "ratingValue": 5,
+                    "worstRating": 1
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Trustpilot",
+                    "sameAs": "https://uk.trustpilot.com/review/pharmacyplanet.co.uk"
+                }
+            },
+
+            {
+                "@type": "Review",
+                "author": {
+                    "@type": "Person",
+                    "name": "Claire Cameron"
+                },
+                "datePublished": "2020-02-24 11:55:03",
+                "reviewBody": "Great service and quick delivery, would recommend.",
+                "url": "",
+                "reviewRating": {
+                    "@type": "Rating",
+                    "bestRating": 5,
+                    "ratingValue": 5,
+                    "worstRating": 1
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Trustpilot",
+                    "sameAs": "https://uk.trustpilot.com/review/pharmacyplanet.co.uk"
+                }
+            },
+
+            {
+                "@type": "Review",
+                "author": {
+                    "@type": "Person",
+                    "name": "Mrs julia gallacher"
+                },
+                "datePublished": "2020-02-23 16:25:40",
+                "reviewBody": "had what i needed-excellent service",
+                "url": "",
+                "reviewRating": {
+                    "@type": "Rating",
+                    "bestRating": 5,
+                    "ratingValue": 5,
+                    "worstRating": 1
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Trustpilot",
+                    "sameAs": "https://uk.trustpilot.com/review/pharmacyplanet.co.uk"
+                }
+            },
+
+            {
+                "@type": "Review",
+                "author": {
+                    "@type": "Person",
+                    "name": "Lisa Robinson"
+                },
+                "datePublished": "2020-02-21 10:55:36",
+                "reviewBody": "Excellent service, very helpful and efficient.",
+                "url": "",
+                "reviewRating": {
+                    "@type": "Rating",
+                    "bestRating": 5,
+                    "ratingValue": 5,
+                    "worstRating": 1
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Trustpilot",
+                    "sameAs": "https://uk.trustpilot.com/review/pharmacyplanet.co.uk"
+                }
+            }
+
+        ]
+    }
+</script>
+
+
+<style>
+/*.catalog-product-view .product-info-main .page-title-wrapper.product{
+    display: none;
+}
+
+.catalog-product-view .product-det {
+    width: 92%;
+    float: left;
+    padding: 30px;
+    margin: 25px 0 0 0;
+    background: #F1F7F9;
+  }
+
+.catalog-product-view .prod-desprection h2.question-text {
+    width: 100%;
+    float: left;
+    padding: 0;
+    margin: 0 0 5px 0;
+    font-size: 38px;
+    color: #000;
+    font-family: 'Lato', sans-serif;
+    line-height: 48px;
+    font-weight: 300 !important; 
+}
+.catalog-product-view .product-info-main{
+    background-color: #fff !important;
+}
+
+.catalog-product-view .product-info-main .product-add-form{
+    padding: 0 30px;
+    background-color: #F1F7F9;
+    width: auto;
+    margin-bottom: 40px;
+}
+.catalog-product-view .product-options-bottom .box-tocart .actions #product-addtocart-button{
+    width: auto;
+}
+
+.catalog-product-view.page-layout-1column .product-info-main{
+    margin-top: 0;
+}
+@media only screen and (min-width: 768px) {
+     .catalog-product-view .product-info-main{
+        width: 55% !important; 
+        margin: 0 auto !important;
+        float: none !important;
+    }
+    .catalog-product-view .product-options-bottom{
+        width: 50% !important;
+    }
+    .catalog-product-view .product-info-main .product-config-price{
+        width: 50% !important;
+        float: right;
+        bottom: 0;
+        padding-top: 20px;
+    }
+    .catalog-product-view .product-info-main .price-box {
+        width: 200px;
+        float: right;
+    }
+    .catalog-product-view .product-add-form .product-options-wrapper .field .control {
+        width: 100%;
+      }
+}
+.product-info-main .product-add-form #custom-selected-option{
+    padding: 0 !important;
+    border-bottom: 1px solid #e7e9eb;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.catalog-product-view .product-options-bottom {
+    width: 100%;
+    border-top:0;
+    padding-top:0;
+    margin-top: 0;
+  }
+
+
+
+  .catalog-product-view .product-info-main .price-container .price-label {
+    display: none !important;
+  }
+
+  .catalog-product-view .selected-product .other-products {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+  }
+
+  .catalog-product-view .product-question-right {
+    display: none;
+  }
+
+
+  .catalog-product-view #itoris_dynamicproductoptions .fieldset.fieldset-section-1 {
+    background: transparent !important;
+  }
+
+  .catalog-product-view .product-options-wrapper .fieldset {
+    background: #F1F7F9 !important;
+    padding: 0 30px 30px 30px;
+    margin-bottom: 20px !important;
+  }
+
+  .catalog-product-view .field.configurable {
+    width: auto;
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 0;
+  }
+ 
+  .catalog-product-view .field.configurable {
+    width: 200px;
+  }
+
+  .catalog-product-view .field.required.configurable .label:after {
+    margin-left: 0;
+  }
+
+  
+
+  .catalog-product-view .field.configurable label {
+    color: #161616;
+    font-size: 14px;
+    font-family: 'Ubuntu', sans-serif;
+    line-height: 22px;
+    font-weight: 600 !important;
+    margin-bottom: 3px !important;
+    float: left;
+  }
+
+  .catalog-product-view .field.configurable select {
+    border: 1px solid #D7E7EC;
+    border-radius: 50px;
+    height: 55px;
+    padding: 0 35px 0 20px;
+  }
+
+  .catalog-product-view .product-det .product-name {
+    padding-top: 15px;
+  }
+ 
+
+  .catalog-product-view .field.configurable select {
+    position: relative;
+    background: url(https://www.pharmacyplanet.com/pub/static/frontend/Custom/luma_weightloss/en_GB/images/select-dropdown-arrow.png) no-repeat right 15px center #fff !important;
+  }
+
+  .catalog-product-view .field.configurable select::after {
+    content: "\25b6";
+    position: absolute;
+    right: 0px;
+    top: 10px;
+    display: block;
+    transition: all 0.4s;
+    color: #000;
+    font-size: 16px;
+    transform: rotate(90deg);
+  }
+
+  .catalog-product-view .product-info-mai .selected-product {
+    width: 100%;
+    float: left;
+    position: relative;
+  }
+
+ .catalog-product-view .product-det .product-desc {
+  display: inline-block; 
+  width: 100%;
+}
+.catalog-product-view .product-det .product-desc .product-img {
+    display: flex;
+    float: left;
+    margin-right: 14px;
+    align-items: center;
+    justify-content: center;
+    height: 135px;
+    background-color: #fff;
+    padding: 8px;
+}
+.catalog-product-view .product-det .product-desc .product-name{
+    display: inline-block; 
+    float: none;
+    vertical-align: bottom; 
+    color: #000000; 
+    font-weight: bold; 
+    font-size: 24px; 
+    margin-bottom: 6px; 
+    line-height: 30px;
+  }
+
+.catalog-product-view .product-options-wrapper .fieldset {    
+  padding:0;
+}
+.catalog-product-view .product-info-main .product-config-price .price-wrapper:before {
+  font-weight: bold; 
+  color: #000000; 
+  margin-bottom: 20px;
+}
+.catalog-product-view .product-info-main .product-config-price .price-container .price {
+  font-size: 45px !important;
+}
+.catalog-product-view .product-add-form {
+  margin-bottom: 0;
+}
+.catalog-product-view .product-info-main { 
+  padding-bottom: 0 !important;
+}
+
+.catalog-product-view .product-info-main .product-config-price .price-wrapper{
+    position: relative;
+}
+.catalog-product-view .product-info-main .product-config-price .price-wrapper:before {
+    content: " Total";
+    color: #2C596D;
+    font-size: 14px;
+    font-family: 'Ubuntu', sans-serif;
+    line-height: 16px;
+    font-weight: 400;
+    width: 100%;
+    float: left;
+  }
+
+@media screen and (min-width: 1025px) {
+    .catalog-product-view .product-info-main .product-det .product-desc .product-name{
+        width: 70% !important;
+        margin-top: 25px !important;
+    }
+    .catalog-product-view .product-info-main .product-det .product-img{
+        width: 140px;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .catalog-product-view .product-info-main .product-det .product-desc .product-img{
+        background-color: transparent;
+        padding: 0;
+    }
+    .catalog-product-view .product-info-main .product-add-form{
+        width: 100%;
+        padding: 0;
+    }
+    .catalog-product-view.page-product-configurable .product-info-main .product-det{
+        width: 92% !important;
+    }
+    .catalog-product-view .product-options-wrapper .fieldset{
+
+        margin-bottom: 0 !important;
+    }
+    .catalog-product-view .field.configurable{
+        width: 100% !important;
+    }
+    .catalog-product-view .product-add-form .product-options-wrapper .field .control{
+        padding: 0 16px;
+        margin-bottom: 25px;
+    }
+    .catalog-product-view .field.configurable label{
+        padding: 0 16px;
+    }
+    .catalog-product-view .product-info-main .product-add-form .product-config-price{
+        padding: 0 20px;
+    }
+    .catalog-product-view .product-info-main .product-options-bottom .box-tocart{
+        padding: 0 20px;
+    }
+    .catalog-product-view .product-info-main .product-add-form #custom-selected-option{
+        border-bottom: 0 !important;
+    }
+    .catalog-product-view .product-options-bottom{
+        border-top: 1px solid #e7e9eb;
+        margin-top: 15px;
+    }
+}
+*/
+
+
+</style>

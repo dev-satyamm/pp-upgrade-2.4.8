@@ -1,0 +1,47 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog sidebar archive template
+ *
+ * @var \Magefan\Blog\Block\Sidebar\Archive $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!isset($escaper)) {
+    /* Compatability fix for old Magento versions */
+    $escaper = $block;
+}
+?>
+
+<?php
+    $_months = $block->getMonths();
+?>
+<?php if (count($_months)) { ?>
+<div class="widget block block-archive" data-bind="scope: 'blog-archive'">
+    <div class="block-title">
+        <strong><?= $escaper->escapeHtml(__('Archive')) ?></strong>
+    </div>
+    <div class="block-content">
+        <?php foreach ($_months as $time) { ?>
+            <?php
+                $title = $block->getTranslatedDate($time);
+            ?>
+            <div class="item">
+                <a title="<?= $escaper->escapeHtml(__('Archive %1', $title)) ?>"
+                   class="archive-item-link"
+                   href="<?= $escaper->escapeUrl($block->getTimeUrl($time)) ?>">
+                    <?= $escaper->escapeHtml($title); ?>
+                </a>
+            </div>
+
+        <?php } ?>
+    </div>
+</div>
+<?php } ?>

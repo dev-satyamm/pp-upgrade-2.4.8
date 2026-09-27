@@ -1,0 +1,40 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog subcategory links template
+ *
+ * @var \Magefan\Blog\Block\Category\SubCategoryLinks $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!isset($escaper)) {
+    /* Compatability fix for old Magento versions */
+    $escaper = $block;
+}
+?>
+
+<?php
+$subCategoriesCollection = $block->getSubCategories();
+?>
+<?php if ($subCategoriesCollection->count()) { ?>
+    <div class="subcategory-links-wrapper">
+        <ul class="subcategory-links">
+            <?php foreach ($subCategoriesCollection as $category) { ?>
+                <li>
+                    <?php $categoryTitle = $escaper->escapeHtml($category->getTitle()) ?>
+                    <a href="<?= $escaper->escapeUrl($category->getCategoryUrl()) ?>"
+                       title="<?= /*@noEscape*/ $categoryTitle ?>">
+                        <?= /*@noEscape*/ $categoryTitle ?>
+                    </a>
+                </li>
+            <?php } ?>
+        </ul>
+    </div>
+<?php } ?>
